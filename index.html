@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aira — Freedom to move</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#6B1E3C;
+    --wine-dark:#4A1329;
+    --amber:#F2A93B;
+    --amber-dark:#C9821E;
+    --ink:#1C1523;
+    --paper:#FFFFFF;
+    --blush:#F7ECEF;
+    --grey:#726B72;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.6;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em;}
+  a{color:inherit;}
+  img,svg{display:block;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:var(--paper);
+    border-bottom:1px solid #EFE6E9;
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:72px;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:700; font-size:22px; color:var(--wine);}
+  .brand svg{width:30px; height:30px;}
+  .nav-cta{
+    background:var(--wine); color:#fff; border:none; padding:10px 22px;
+    border-radius:999px; font-family:'Inter',sans-serif; font-weight:600; font-size:14px;
+    cursor:pointer;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    background:var(--wine);
+    color:#fff;
+    padding:96px 0 120px;
+  }
+  .hero .mark-bg{
+    position:absolute; right:-120px; top:-80px; width:520px; height:520px; opacity:0.10;
+  }
+  .eyebrow{
+    display:inline-block; font-size:13px; font-weight:600; letter-spacing:0.08em;
+    color:var(--amber); text-transform:uppercase; margin-bottom:20px;
+  }
+  .hero h1{
+    font-size:clamp(40px,6vw,68px); line-height:1.05; max-width:720px; color:#fff;
+  }
+  .hero h1 em{font-style:italic; color:var(--amber);}
+  .hero p.lede{
+    margin-top:22px; font-size:19px; max-width:560px; color:#F0DEE4;
+  }
+  .hero-bottom{margin-top:48px;}
+
+  /* waitlist form */
+  .waitlist{
+    background:#fff; border-radius:20px; padding:28px; max-width:560px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .toggle{
+    display:flex; background:var(--blush); border-radius:12px; padding:4px; margin-bottom:18px;
+  }
+  .toggle button{
+    flex:1; padding:11px; border:none; background:transparent; border-radius:9px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px; color:var(--wine);
+    cursor:pointer; transition:background 0.15s, color 0.15s;
+  }
+  .toggle button.active{background:var(--wine); color:#fff;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:13px; font-weight:600; color:var(--ink); margin-bottom:6px;}
+  .field input{
+    width:100%; padding:12px 14px; border:1.5px solid #E3D6DA; border-radius:10px;
+    font-family:'Inter',sans-serif; font-size:15px; color:var(--ink);
+  }
+  .field input:focus{outline:2px solid var(--amber); outline-offset:1px; border-color:var(--amber);}
+  .submit-btn{
+    width:100%; padding:14px; border:none; border-radius:10px; margin-top:6px;
+    background:var(--amber); color:var(--ink); font-family:'Inter',sans-serif;
+    font-weight:700; font-size:15px; cursor:pointer; transition:background 0.15s;
+  }
+  .submit-btn:hover{background:var(--amber-dark); color:#fff;}
+  .fine-print{font-size:12px; color:var(--grey); margin-top:12px; text-align:center;}
+  .success{
+    display:none; text-align:center; padding:20px 8px;
+  }
+  .success.show{display:block;}
+  .success h3{color:var(--wine); font-size:22px; margin-bottom:8px;}
+  .success p{color:var(--grey); font-size:14px;}
+
+  /* ---------- STATS ---------- */
+  .stats{padding:64px 0; border-bottom:1px solid #F1E7EA;}
+  .stats-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:32px; text-align:center;
+  }
+  .stat .num{font-family:'Fraunces',serif; font-size:44px; font-weight:700; color:var(--wine);}
+  .stat .label{font-size:14px; color:var(--grey); margin-top:6px;}
+
+  /* ---------- SAFETY ---------- */
+  .section{padding:88px 0;}
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-head .eyebrow{color:var(--wine);}
+  .section-head h2{font-size:clamp(28px,4vw,40px); color:var(--ink);}
+  .section-head p{margin-top:14px; font-size:17px; color:var(--grey);}
+
+  .feature-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:24px;}
+  .feature{
+    padding:28px; border:1px solid #F1E7EA; border-radius:16px; background:#FDFAFB;
+  }
+  .feature .icon{
+    width:44px; height:44px; border-radius:12px; background:var(--blush);
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+  }
+  .feature .icon svg{width:22px; height:22px; stroke:var(--wine);}
+  .feature h3{font-size:18px; color:var(--ink); margin-bottom:8px; font-family:'Inter',sans-serif; font-weight:600;}
+  .feature p{font-size:15px; color:var(--grey);}
+
+  /* ---------- HOW IT WORKS ---------- */
+  .how{background:var(--blush);}
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  .step{position:relative; padding-top:8px;}
+  .step .step-num{
+    font-family:'Fraunces',serif; font-size:15px; font-weight:700; color:var(--amber-dark);
+    margin-bottom:10px; display:block;
+  }
+  .step h3{font-size:19px; margin-bottom:8px; font-family:'Inter',sans-serif; font-weight:600;}
+  .step p{font-size:15px; color:var(--grey);}
+
+  /* ---------- CTA FOOTER ---------- */
+  .cta-footer{
+    background:var(--ink); color:#fff; padding:80px 0 40px; text-align:center;
+  }
+  .cta-footer h2{color:#fff; font-size:clamp(28px,4vw,40px); max-width:560px; margin:0 auto 14px;}
+  .cta-footer p{color:#B7ADB5; font-size:16px; max-width:480px; margin:0 auto 32px;}
+  .cta-footer .submit-btn{max-width:280px; margin:0 auto;}
+  .footer-bottom{
+    margin-top:64px; padding-top:24px; border-top:1px solid #35303A;
+    display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#726B72;
+    flex-wrap:wrap; gap:12px;
+  }
+
+  @media (max-width:760px){
+    .stats-grid{grid-template-columns:1fr; gap:28px;}
+    .feature-grid{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr; gap:32px;}
+    .hero{padding:64px 0 90px;}
+    .hero .mark-bg{width:340px; height:340px; right:-100px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100,16 C132,16 158,29 176,42 L176,98 C176,150 142,186 100,198 C58,186 24,150 24,98 L24,42 C42,29 68,16 100,16 Z" fill="#6B1E3C"/>
+        <line x1="58" y1="58" x2="100" y2="146" stroke="#F2A93B" stroke-width="22" stroke-linecap="round"/>
+        <line x1="142" y1="58" x2="100" y2="146" stroke="#F2A93B" stroke-width="22" stroke-linecap="round"/>
+        <path d="M100,28 L106,40 L118,44 L106,48 L100,60 L94,48 L82,44 L94,40 Z" fill="#F2A93B"/>
+      </svg>
+      Aira
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('waitlist-form').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="mark-bg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M100,16 C132,16 158,29 176,42 L176,98 C176,150 142,186 100,198 C58,186 24,150 24,98 L24,42 C42,29 68,16 100,16 Z" fill="#fff"/>
+  </svg>
+  <div class="wrap">
+    <span class="eyebrow">Launching in Jaipur</span>
+    <h1>Freedom to move, <em>safely.</em></h1>
+    <p class="lede">Aira is Jaipur's first on-demand, app-first, women-only ride-hailing platform — verified women drivers, for women riders, every single trip.</p>
+
+    <div class="hero-bottom">
+      <div class="waitlist" id="waitlist-form">
+        <div id="form-view">
+          <div class="toggle">
+            <button type="button" class="active" data-role="rider" onclick="setRole('rider', this)">I want to ride</button>
+            <button type="button" data-role="driver" onclick="setRole('driver', this)">I want to drive</button>
+          </div>
+          <form id="signup-form" onsubmit="handleSubmit(event)">
+            <div class="field">
+              <label for="name">Your name</label>
+              <input type="text" id="name" required placeholder="Priya Sharma">
+            </div>
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" required placeholder="98xxxxxxxx">
+            </div>
+            <div class="field">
+              <label for="area">Area in Jaipur</label>
+              <input type="text" id="area" placeholder="Vaishali Nagar, Malviya Nagar...">
+            </div>
+            <button type="submit" class="submit-btn" id="submit-label">Join the waitlist as a rider</button>
+          </form>
+          <p class="fine-print">No spam. We'll only reach out when Aira is ready to launch in your area.</p>
+        </div>
+        <div class="success" id="success-view">
+          <h3>You're on the list</h3>
+          <p>Thanks for joining Aira early — we'll message you the moment we launch in Jaipur.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="num">0</div>
+        <div class="label">Women-only, on-demand ride apps currently operating in Jaipur</div>
+      </div>
+      <div class="stat">
+        <div class="num">100%</div>
+        <div class="label">Verified women drivers, background-checked before onboarding</div>
+      </div>
+      <div class="stat">
+        <div class="num">24/7</div>
+        <div class="label">Safety support line for every ride, day or night</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="safety">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Why Aira</span>
+      <h2>Safety built in, not bolted on</h2>
+      <p>General ride-hailing apps added safety features after the fact. Aira starts there — every part of the platform is designed around one question: would a woman traveling alone at 10pm trust this ride?</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6l7-4z"/></svg></div>
+        <h3>Verified women drivers</h3>
+        <p>Every driver passes identity verification and a background check before their first ride — no exceptions.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <h3>Live trip sharing</h3>
+        <p>Share your route in real time with anyone you choose — they see exactly where you are, the whole ride.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9L2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
+        <h3>One-tap SOS</h3>
+        <p>A single tap alerts our safety team and your emergency contacts with your live location, instantly.</p>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H7l-3 3V4z"/></svg></div>
+        <h3>Always-on support</h3>
+        <p>A safety report gets a human response in minutes, any hour of the day, not a ticket queue.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2>From waitlist to your first ride</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h3>Join the waitlist</h3>
+        <p>Tell us if you're riding or driving, and which part of Jaipur you're in.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h3>Get verified or get notified</h3>
+        <p>Drivers complete identity verification early. Riders hear from us as launch approaches.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h3>Ride when we launch</h3>
+        <p>Open the app, book a ride, and travel with a verified woman driver from day one.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="cta-footer">
+  <div class="wrap">
+    <h2>Be first in Jaipur to ride with Aira</h2>
+    <p>Spots on the early access list are limited to our launch neighborhoods first.</p>
+    <button class="submit-btn" onclick="document.getElementById('waitlist-form').scrollIntoView({behavior:'smooth'})">Join the waitlist</button>
+    <div class="footer-bottom wrap">
+      <span>&copy; 2026 Aira. Freedom to move.</span>
+      <span>Jaipur, Rajasthan</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Paste your Google Apps Script Web App URL here after deploying (see setup guide).
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+  let currentRole = 'rider';
+  function setRole(role, btn){
+    currentRole = role;
+    document.querySelectorAll('.toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('submit-label').textContent =
+      role === 'rider' ? 'Join the waitlist as a rider' : 'Join the waitlist as a driver';
+  }
+
+  function handleSubmit(e){
+    e.preventDefault();
+    const btn = document.getElementById('submit-label');
+    const originalText = btn.textContent;
+    btn.textContent = 'Submitting...';
+
+    const payload = {
+      role: currentRole,
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      area: document.getElementById('area').value
+    };
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // keeps this a "simple" request, avoids CORS preflight
+      body: JSON.stringify(payload)
+    })
+    .then(() => {
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').classList.add('show');
+    })
+    .catch(() => {
+      btn.textContent = originalText;
+      alert('Something went wrong — please try again in a moment.');
+    });
+  }
+</script>
+
+</body>
+</html>

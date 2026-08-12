@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aira — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#6B1E3C; --amber:#F2A93B; --ink:#1C1523; --paper:#FFFFFF;
+    --blush:#F7ECEF; --grey:#726B72; --border:#EFE6E9;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Inter',sans-serif; color:var(--ink); background:var(--blush); line-height:1.5;}
+  h1{font-family:'Fraunces',serif; font-weight:700;}
+
+  /* ---- login gate ---- */
+  #gate{
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  #gate .box{
+    background:#fff; border-radius:16px; padding:32px; width:100%; max-width:360px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.08); text-align:center;
+  }
+  #gate h1{font-size:24px; color:var(--wine); margin-bottom:6px;}
+  #gate p{font-size:13px; color:var(--grey); margin-bottom:20px;}
+  #gate input{
+    width:100%; padding:12px 14px; border:1.5px solid #E3D6DA; border-radius:10px; font-size:15px; margin-bottom:12px;
+  }
+  #gate button{
+    width:100%; padding:12px; border:none; border-radius:10px; background:var(--wine); color:#fff;
+    font-weight:600; font-size:14px; cursor:pointer;
+  }
+  #gate .error{color:#B3261E; font-size:13px; margin-top:10px; display:none;}
+
+  /* ---- dashboard ---- */
+  #dashboard{display:none;}
+  header{
+    background:#fff; border-bottom:1px solid var(--border); padding:18px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  header h1{font-size:20px; color:var(--wine);}
+  header .actions{display:flex; gap:10px;}
+  header button{
+    border:1px solid var(--border); background:#fff; padding:9px 16px; border-radius:8px;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13px; cursor:pointer; color:var(--ink);
+  }
+  header button.primary{background:var(--wine); color:#fff; border-color:var(--wine);}
+
+  main{padding:28px; max-width:1100px; margin:0 auto;}
+
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; margin-bottom:24px;}
+  .stat{background:#fff; border-radius:12px; padding:18px; border:1px solid var(--border);}
+  .stat .num{font-family:'Fraunces',serif; font-size:28px; font-weight:700; color:var(--wine);}
+  .stat .label{font-size:12px; color:var(--grey); margin-top:4px;}
+
+  .toolbar{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;}
+  .toolbar select, .toolbar input{
+    padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; background:#fff;
+  }
+  .toolbar input{flex:1; min-width:160px;}
+
+  table{width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--border);}
+  th, td{text-align:left; padding:12px 14px; font-size:13px; border-bottom:1px solid var(--border);}
+  th{background:var(--blush); color:var(--wine); font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:0.03em;}
+  tr:last-child td{border-bottom:none;}
+  .badge{display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:600;}
+  .badge.rider{background:#F2A93B33; color:#C9821E;}
+  .badge.driver{background:#6B1E3C1A; color:#6B1E3C;}
+  .empty{text-align:center; padding:40px; color:var(--grey); font-size:14px;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="box">
+    <h1>Aira Admin</h1>
+    <p>Restricted access — waitlist data</p>
+    <input type="password" id="pw" placeholder="Admin password" onkeydown="if(event.key==='Enter') login()">
+    <button onclick="login()">Enter</button>
+    <div class="error" id="gate-error">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <header>
+    <h1>Aira — Waitlist Admin</h1>
+    <div class="actions">
+      <button onclick="loadData()">Refresh</button>
+      <button class="primary" onclick="exportCSV()">Export CSV</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="stats">
+      <div class="stat"><div class="num" id="stat-total">–</div><div class="label">Total signups</div></div>
+      <div class="stat"><div class="num" id="stat-riders">–</div><div class="label">Riders</div></div>
+      <div class="stat"><div class="num" id="stat-drivers">–</div><div class="label">Drivers</div></div>
+      <div class="stat"><div class="num" id="stat-areas">–</div><div class="label">Areas covered</div></div>
+    </div>
+
+    <div class="toolbar">
+      <select id="role-filter" onchange="render()">
+        <option value="all">All roles</option>
+        <option value="rider">Riders only</option>
+        <option value="driver">Drivers only</option>
+      </select>
+      <input type="text" id="search" placeholder="Search name, phone, or area..." oninput="render()">
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Role</th><th>Name</th><th>Phone</th><th>Area</th></tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div class="empty" id="empty-state" style="display:none;">No signups match this filter.</div>
+  </main>
+</div>
+
+<script>
+  // Paste your Google Apps Script Web App URL here (same one used on the landing page).
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+  let adminPassword = '';
+  let allRows = [];
+
+  function login(){
+    const pw = document.getElementById('pw').value;
+    if(!pw) return;
+    adminPassword = pw;
+    loadData(true);
+  }
+
+  function loadData(isLogin){
+    const url = `${APPS_SCRIPT_URL}?password=${encodeURIComponent(adminPassword)}`;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        if(data.error === 'unauthorized'){
+          document.getElementById('gate-error').style.display = 'block';
+          return;
+        }
+        allRows = data;
+        document.getElementById('gate').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        render();
+      })
+      .catch(() => {
+        if(isLogin) document.getElementById('gate-error').style.display = 'block';
+      });
+  }
+
+  function render(){
+    const roleFilter = document.getElementById('role-filter').value;
+    const search = document.getElementById('search').value.toLowerCase();
+
+    let rows = allRows.filter(r => roleFilter === 'all' || r.role === roleFilter);
+    if(search){
+      rows = rows.filter(r =>
+        (r.name || '').toLowerCase().includes(search) ||
+        (r.phone || '').toLowerCase().includes(search) ||
+        (r.area || '').toLowerCase().includes(search)
+      );
+    }
+
+    // stats always reflect the full dataset, not the filtered view
+    document.getElementById('stat-total').textContent = allRows.length;
+    document.getElementById('stat-riders').textContent = allRows.filter(r => r.role === 'rider').length;
+    document.getElementById('stat-drivers').textContent = allRows.filter(r => r.role === 'driver').length;
+    document.getElementById('stat-areas').textContent = new Set(allRows.map(r => (r.area||'').trim()).filter(Boolean)).size;
+
+    const tbody = document.getElementById('table-body');
+    const emptyState = document.getElementById('empty-state');
+    tbody.innerHTML = '';
+
+    if(rows.length === 0){
+      emptyState.style.display = 'block';
+      return;
+    }
+    emptyState.style.display = 'none';
+
+    rows.slice().reverse().forEach(r => {
+      const tr = document.createElement('tr');
+      const date = r.timestamp ? new Date(r.timestamp).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}) : '';
+      tr.innerHTML = `
+        <td>${date}</td>
+        <td><span class="badge ${r.role}">${r.role}</span></td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.phone)}</td>
+        <td>${escapeHtml(r.area)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str || '';
+    return div.innerHTML;
+  }
+
+  function exportCSV(){
+    const header = ['Date','Role','Name','Phone','Area'];
+    const lines = [header.join(',')];
+    allRows.forEach(r => {
+      const date = r.timestamp ? new Date(r.timestamp).toLocaleDateString('en-IN') : '';
+      lines.push([date, r.role, r.name, r.phone, r.area].map(v => `"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+    });
+    const blob = new Blob([lines.join('\n')], {type:'text/csv'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'aira-waitlist.csv';
+    link.click();
+  }
+</script>
+
+</body>
+</html>
